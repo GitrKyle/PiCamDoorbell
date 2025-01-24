@@ -4,6 +4,7 @@
 # - Run as service, auto button reset/timeout    #
 ##################################################
 
+def main():
 
 import cv2
 import requests
