@@ -69,7 +69,7 @@ def doorbell_pressed():
         print("Button pressed too soon, ignoring.")
         return  # Ignore if pressed within the last 5 seconds
     doorbell_pressed.last_press_time = time.time()  # Update last press time
-
+    # Get images from HTTP Url
     image_files = []
     response = requests.get(url, stream=True)
 
