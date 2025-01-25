@@ -1,9 +1,3 @@
-##################################################
-# Raspberry Pi Camera Doorbell Notification Email#
-# - Captures Image(s) from HTTP/GET              #
-# - Run as service, auto button reset/timeout    #
-##################################################
-
 import cv2
 import requests
 import numpy as np
@@ -16,21 +10,21 @@ from email.mime.base import MIMEBase
 from email import encoders
 
 # Define the GPIO pin for the doorbell button
-DOORBELL_BUTTON_PIN = 2  # GPIO2 (Pin 3 + Ground)
+DOORBELL_BUTTON_PIN = 2  # GPIO2 (Pin 3)
 doorbell_button = Button(DOORBELL_BUTTON_PIN)
 
-# Define the MJPEG stream URL                                                                                 
+# Define the MJPEG stream URL
 url = "http://192.168.40.54/mjpeg?res=full&x0=0&y0=0&x1=1600&y1=1200&quality=21&doublescan=0"
 
 # SMTP settings for sending email
 SMTP_SERVER = 'smtp.gmail.com'
 SMTP_PORT = 587
-SENDER_EMAIL = 'xxxxxxxxx@gmail.com' # Sender Email Address
-SENDER_PASSWORD = 'xxxxxxx'  # Your Gmail app-specific password (see below)                                                                       
+SENDER_EMAIL = 'xxx@gmail.com'
 #SENDER_PASSWORD = os.getenv('EMAIL_APP_PASSWORD')  # Get app password from the environment variable
-RECEIVER_EMAIL = 'xxxxxxxxx@gmail.com'
+SENDER_PASSWORD = "xxx"
+RECEIVER_EMAIL = 'xxx@gmail.com'
 
-# Directory to temp save the images
+# Directory to save the images
 image_dir = '/home/pi/doorimages/'
 
 # Create the directory if it doesn't exist
@@ -68,7 +62,7 @@ def doorbell_pressed():
         print("Button pressed too soon, ignoring.")
         return  # Ignore if pressed within the last 5 seconds
     doorbell_pressed.last_press_time = time.time()  # Update last press time
-    # Get images from HTTP Url
+
     image_files = []
     response = requests.get(url, stream=True)
 
@@ -91,7 +85,7 @@ def doorbell_pressed():
                     image_files.append(img_path)
                     print(f"Saved image {img_path}")
                     frame_count += 1
-                # Number of images to capture
+
                 if frame_count >= 8:
                     break
 
@@ -100,8 +94,6 @@ def doorbell_pressed():
             send_email_with_attachments(image_files)
             # Play the MP3 file after sending the email
             os.system('mpg123 /home/pi/doorimages/Doorbell.mp3')
-#	     os.system('mpg123 -a default /home/pi/doorimages/Doorbell.mp3')
-
         else:
             print("No images captured, email not sent.")
     else:
@@ -116,6 +108,6 @@ doorbell_button.when_pressed = doorbell_pressed
 # Main loop to keep checking button press
 try:
     while True:
-        time.sleep(0.1)  # The loop will continue to run and listen for the button press
+        time.sleep(0.5)  # The loop will continue to run and listen for the button press
 except KeyboardInterrupt:
     print("Program interrupted")
